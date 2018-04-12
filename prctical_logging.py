@@ -24,8 +24,8 @@ ch.setFormatter(formatter_c)
 logger.addHandler(ch)
 
 # 记录日志
-logger.debug('debug')
-logger.info('info')
-logger.warning('warning')
-logger.error('error')
-logger.critical('critical')
+# logger.debug('debug')
+# logger.info('info')
+# logger.warning('warning')
+# logger.error('error')
+# logger.critical('critical')
