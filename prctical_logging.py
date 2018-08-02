@@ -1,31 +1,41 @@
 # -*- coding: utf8 -*-
+import sys
 import logging
+from logging.handlers import TimedRotatingFileHandler
 
-# 创建一个logger
-logger = logging.getLogger('practical_logging')
-logger.setLevel(logging.DEBUG)
+FORMATTER = logging.Formatter(
+    "[%(asctime)s]-[%(process)d]-[%(thread)d]-[%(name)s]-[%(lineno)s]-[%(levelname)s]: %(message)s")
 
-# 创建一个handler，用于写入日志文件
-# fh = logging.FileHandler('practical_logging.log')
-# fh.setLevel(logging.INFO)
 
-# 再创建一个handler，用于输出到控制台，仅输出错误信息
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+def get_console_handler():
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(FORMATTER)
+    return console_handler
 
-# 定义handler的输出格式
-# formatter_f = logging.Formatter('[%(asctime)s][%(process)d:%(thread)d][%(levelname)s] %(message)s')
-# fh.setFormatter(formatter_f)
-formatter_c = logging.Formatter('[%(asctime)s]-[%(process)d]-[%(thread)d]-[%(name)s]-[%(lineno)s]-[%(levelname)s]: %(message)s')
-ch.setFormatter(formatter_c)
 
-# 给logger添加handler
-# logger.addHandler(fh)
-logger.addHandler(ch)
+def get_file_handler():
+    file_handler = TimedRotatingFileHandler(LOG_FOLDER + "/{}.log".format(SCRIPT_NAME), when="midnight")
+    file_handler.setFormatter(FORMATTER)
+    return file_handler
+
+
+def get_logger(logger_name):
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.DEBUG)  # better to have too much log than not enough
+    logger.addHandler(get_console_handler())
+    logger.addHandler(get_file_handler())
+    # with this pattern, it's rarely necessary to propagate the error up to parent
+    logger.propagate = False
+    return logger
+
+
+if __name__ == "__main__":
+    # set logger for this script
+    logger = get_logger(SCRIPT_NAME)
 
 # 记录日志
-# logger.debug('debug')
-# logger.info('info')
-# logger.warning('warning')
-# logger.error('error')
-# logger.critical('critical')
+    logger.debug('debug')
+    logger.info('info')
+    logger.warning('warning')
+    logger.error('error')
+    logger.critical('critical')
